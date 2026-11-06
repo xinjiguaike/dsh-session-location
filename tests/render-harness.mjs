@@ -97,12 +97,25 @@ function makeProps(overrides) {
   };
 }
 
+function renderFresh(Component, props) {
+  hooks = []; index = 0; pendingEffects = [];
+  const tree = Component(props);
+  const effects = pendingEffects;
+  pendingEffects = [];
+  for (const eff of effects) {
+    const cleanup = eff();
+    if (typeof cleanup === 'function') cleanups.push(cleanup);
+  }
+  return tree;
+}
+
 // 1) basic render + branch resolution
 {
   hooks = []; cleanups = [];
   const { ctx, registrations } = makeCtx({ '/Users/x/projects/hermes/.git/HEAD': 'ref: refs/heads/main\n' });
   exported.apply(ctx);
-  assert.strictEqual(registrations.length, 2, 'two seats registered');
+  assert.strictEqual(registrations.length, 3, 'two row seats plus the settings row registered');
+  assert.ok(registrations.some((r) => r.name === 'settings.general.item'), 'settings row registered');
   const leading = registrations.find((r) => r.name === 'sidebar.session.row.leading');
   assert.strictEqual(leading.options.locale, 'sessionLocation');
   const tree = await mount(leading.Component, makeProps(leading.options.inject()));
@@ -205,6 +218,30 @@ function makeProps(overrides) {
   const reader = leading.options.inject().branchReader;
   assert.strictEqual(await reader('s1', '/Users/x/projects/hermes'), null);
   console.log('ok reader failure tolerated');
+}
+
+// 8) the General settings switch controls whether the row label renders
+{
+  const readCtx = makeCtx({});
+  exported.apply(readCtx.ctx);
+  const leading = readCtx.registrations.find((r) => r.name === 'sidebar.session.row.leading');
+  const rowReg = readCtx.registrations.find((r) => r.name === 'settings.general.item');
+  const rowProps = { t: (key) => key };
+  hooks = []; index = 0; pendingEffects = [];
+  const rowTree = rowReg.Component(rowProps);
+  const switchEl = kidsOf(rowTree).find((c) => c.props && c.props.role === 'switch');
+  assert.ok(switchEl, 'settings row renders a switch');
+  assert.strictEqual(switchEl.props['aria-checked'], true, 'label is on by default');
+  switchEl.props.onClick();
+  const hidden = renderFresh(leading.Component, makeProps({ useSessions: (sel) => sel({ byId: { s1: { id: 's1', cwd: '/x/project' } } }) }));
+  assert.strictEqual(hidden, null, 'label is hidden once the switch is off');
+  const rowTreeOff = (() => { hooks = []; index = 0; pendingEffects = []; return rowReg.Component(rowProps); })();
+  const switchOff = kidsOf(rowTreeOff).find((c) => c.props && c.props.role === 'switch');
+  assert.strictEqual(switchOff.props['aria-checked'], false);
+  switchOff.props.onClick();
+  const shown = renderFresh(leading.Component, makeProps({ useSessions: (sel) => sel({ byId: { s1: { id: 's1', cwd: '/x/project' } } }) }));
+  assert.ok(shown && shown.props.className === 'dsh-sl-context', 'label comes back when the switch is on');
+  console.log('ok settings switch controls the row label');
 }
 
 console.log('ALL HARNESS CHECKS PASSED');

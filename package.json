@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-location",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "Shows the owning workspace and Git branch under each session row in the flat session list.",
   "exports": {

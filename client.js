@@ -16,11 +16,59 @@ window.__ModuleLoader__.load({
     /** Plugin-owned class names; the style sheet below is the only host-DOM contract. */
     const CONTEXT_CLASS = 'dsh-sl-context';
 
+    /** Browser-local preference: whether the row label is drawn at all. */
+    const PREFERENCE_KEY = 'dsh-session-location:show-row-location';
+    const preference = (() => {
+      let value = true;
+      try {
+        const stored = window.localStorage.getItem(PREFERENCE_KEY);
+        if (stored === '0') value = false;
+        else if (stored === '1') value = true;
+      } catch {
+        /* Private mode or a blocked storage backend: keep the default. */
+      }
+      const listeners = new Set();
+      return {
+        get: () => value,
+        subscribe(listener) {
+          listeners.add(listener);
+          return () => {
+            listeners.delete(listener);
+          };
+        },
+        set(next) {
+          const normalized = next === true;
+          if (normalized === value) return;
+          value = normalized;
+          try {
+            window.localStorage.setItem(PREFERENCE_KEY, normalized ? '1' : '0');
+          } catch {
+            /* The in-memory value still applies for this page. */
+          }
+          for (const listener of [...listeners]) listener();
+        },
+      };
+    })();
+
+    /** Subscribe one component to the row-label preference. */
+    function useShowLocation() {
+      if (typeof React.useSyncExternalStore === 'function') {
+        return React.useSyncExternalStore(preference.subscribe, preference.get, preference.get);
+      }
+      const [value, setValue] = React.useState(preference.get);
+      React.useEffect(() => preference.subscribe(() => setValue(preference.get())), []);
+      return value;
+    }
+
     const en = {
       ungrouped: 'Ungrouped',
+      'settings.title': 'Show workspace and branch in the session list',
+      'settings.description': 'Adds the owning workspace and current Git branch under each session row in the flat list.',
     };
     const zh = {
       ungrouped: '未分组',
+      'settings.title': '在会话列表中显示工作区与分支',
+      'settings.description': '在单列表的每个会话行下方显示所属工作区与当前 Git 分支。',
     };
 
     /**
@@ -45,6 +93,15 @@ window.__ModuleLoader__.load({
       '.dsh-sl-branch{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}',
       '.dsh-sl-sep{flex:none;opacity:.45}',
       '.dsh-sl-icon{flex:none;width:12px;height:12px;display:inline-flex;align-items:center;justify-content:center;opacity:.8}',
+      '.dsh-sl-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2)}',
+      '.dsh-sl-row-text{min-width:0}',
+      '.dsh-sl-row-title{font-size:14px;line-height:20px}',
+      '.dsh-sl-row-description{color:var(--dsw-alias-label-secondary);margin-top:4px;font-size:12px;line-height:18px}',
+      '.dsh-sl-switch{position:relative;flex:0 0 auto;box-sizing:border-box;width:36px;height:20px;padding:2px;border:0;border-radius:999px;background:var(--dsw-alias-border-l3,var(--dsw-alias-border-l2));cursor:pointer}',
+      '.dsh-sl-switch[aria-checked="true"]{background:var(--dsw-alias-brand-primary)}',
+      '.dsh-sl-switch:focus-visible{outline:2px solid var(--dsw-focus-ring-color,var(--dsw-alias-brand-primary));outline-offset:2px}',
+      '.dsh-sl-thumb{display:block;width:16px;height:16px;border-radius:50%;background:var(--dsw-alias-switch-thumb,var(--dsw-alias-label-primary-foreground,#fff));transition:transform 120ms ease}',
+      '.dsh-sl-switch[aria-checked="true"] .dsh-sl-thumb{transform:translateX(16px)}',
     ].join('\n');
 
     function basename(path) {
@@ -172,7 +229,7 @@ window.__ModuleLoader__.load({
     const SELECT_ITEMS = (state) => (state === undefined || state === null || !Array.isArray(state.items) ? EMPTY_ITEMS : state.items);
 
     function useLocation(props) {
-      const { sessionId, useSessions, useWorkspaces, t, branchReader } = props;
+      const { sessionId, useSessions, useWorkspaces, t, branchReader, enabled } = props;
       const selectSummary = React.useCallback(
         (state) => (state === undefined || state === null || state.byId === undefined ? undefined : state.byId[sessionId]),
         [sessionId],
@@ -191,8 +248,8 @@ window.__ModuleLoader__.load({
         }
         return cwd === undefined ? t('ungrouped') : basename(cwd) || t('ungrouped');
       }, [items, sessionId, cwd, t]);
-      const branch = useBranch(cwd, sessionId, branchReader);
-      if (summary === undefined || summary === null) return null;
+      const branch = useBranch(enabled === true ? cwd : undefined, sessionId, branchReader);
+      if (enabled !== true || summary === undefined || summary === null) return null;
       return { workspaceName, branch };
     }
 
@@ -222,7 +279,7 @@ window.__ModuleLoader__.load({
       );
     }
 
-    /** Branch glyph from the same Host icon set (`branch-outline`, regular weight). */
+    /** Git-branch glyph used by the row label. */
     function branchIcon(key) {
       return h(
         'svg',
@@ -233,26 +290,23 @@ window.__ModuleLoader__.load({
           width: 12,
           height: 12,
           fill: 'none',
-          strokeWidth: 1.2,
+          strokeWidth: 1.1,
+          strokeLinecap: 'round',
           'aria-hidden': 'true',
         },
-        h('path', {
-          d: 'M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564',
-          stroke: 'currentColor',
-        }),
-        h('path', {
-          d: 'M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944',
-          stroke: 'currentColor',
-        }),
-        h('circle', { cx: 12.4502, cy: 3.3079, r: 1.56962, stroke: 'currentColor' }),
-        h('circle', { cx: 12.4502, cy: 12.6921, r: 1.56962, stroke: 'currentColor' }),
+        h('circle', { cx: 4.5, cy: 3.6, r: 1.6, stroke: 'currentColor' }),
+        h('circle', { cx: 4.5, cy: 12.4, r: 1.6, stroke: 'currentColor' }),
+        h('circle', { cx: 11.5, cy: 5.6, r: 1.6, stroke: 'currentColor' }),
+        h('path', { d: 'M4.5 5.2v5.6', stroke: 'currentColor' }),
+        h('path', { d: 'M11.5 7.2v.8c0 1.4-1.1 2.4-2.5 2.4H6.2', stroke: 'currentColor' }),
       );
     }
 
     /** The workspace + branch line rendered under one Session title. */
     function LocationLabel(props) {
       const translate = typeof props.t === 'function' ? props.t : (key) => key;
-      const location = useLocation({ ...props, t: translate });
+      const enabled = useShowLocation();
+      const location = useLocation({ ...props, t: translate, enabled });
       if (location === null) return null;
       const children = [folderIcon('folder'), h('span', { className: 'dsh-sl-workspace', key: 'ws' }, location.workspaceName)];
       if (typeof location.branch === 'string' && location.branch !== '') {
@@ -298,6 +352,35 @@ window.__ModuleLoader__.load({
       return h(LocationLabel, props);
     }
 
+    /** General settings row that owns the row-label preference. */
+    function SettingsLocationRow(props) {
+      const translate = typeof props.t === 'function' ? props.t : (key) => key;
+      const enabled = useShowLocation();
+      const title = translate('settings.title');
+      return h(
+        'div',
+        { className: 'dsh-sl-row' },
+        h(
+          'div',
+          { className: 'dsh-sl-row-text' },
+          h('div', { className: 'dsh-sl-row-title' }, title),
+          h('div', { className: 'dsh-sl-row-description' }, translate('settings.description')),
+        ),
+        h(
+          'button',
+          {
+            type: 'button',
+            role: 'switch',
+            'aria-checked': enabled,
+            'aria-label': title,
+            className: 'dsh-sl-switch',
+            onClick: () => preference.set(!enabled),
+          },
+          h('span', { className: 'dsh-sl-thumb' }),
+        ),
+      );
+    }
+
     function apply(ctx) {
       ctx.effect(() => ctx.locale.register(NS, { en, zh }), 'session-location: dictionaries');
       ctx.effect(() => {
@@ -311,6 +394,12 @@ window.__ModuleLoader__.load({
       }, 'session-location: row label styles');
 
       const branchReader = createBranchReader(ctx);
+      ctx.slots.inject('settings.general.item', () => ctx.slots.register({
+        name: 'settings.general.item',
+        id: 'session-location',
+        order: 35,
+        locale: NS,
+      }, SettingsLocationRow));
       ctx.slots.inject('sidebar.session.row.leading', () => ctx.slots.register({
         name: 'sidebar.session.row.leading',
         id: LEADING_ID,
