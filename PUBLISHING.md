@@ -233,6 +233,13 @@ icon: https://raw.githubusercontent.com/xinjiguaike/dsh-session-location/main/as
 
 ## 七、本仓库当前状态
 
+发布已完成的快照（2026-11-06）：
+
+- npm：`dsh-session-location@0.1.0`，`latest`；首次发布会先出现 `0.0.0-stage` 占位包（staged publishing 的占位），几分钟后真实版本落地，`latest` 指向 `0.1.0`
+- GitHub Release：`v0.1.0` + 版本无关的 `dsh-session-location.tgz` 附件
+- 收录 PR：`awesome-dsh-plugin#12597`（等仓库满 1 天 gate 自动转绿）
+
+
 已完成：
 
 - `dsh.bundle` / `dsh.client` 清单、bundle patch、宿主空实现、浏览器半区
@@ -250,10 +257,11 @@ icon: https://raw.githubusercontent.com/xinjiguaike/dsh-session-location/main/as
 
 还需要你做（都要你的账号）：
 
-- [ ] 等仓库满 1 天（创建时间 2026-11-06 15:36 +08:00，即 2026-11-07 15:36 之后）再提收录 PR
-- [ ] npm 注册账号、登录并发布到 `registry.npmjs.org`
+- [x] 收录 PR 已开：<https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/12597>（仓库年龄 gate 会在 2026-11-07 15:36 后自动重跑通过）
+- [x] npm 已发布：<https://www.npmjs.com/package/dsh-session-location> `0.1.0`（latest；shasum `fd650d45…` 与本地 `npm pack` 一致）
+- [x] GitHub Release `v0.1.0`：<https://github.com/xinjiguaike/dsh-session-location/releases/tag/v0.1.0>，附件 `dsh-session-location.tgz`（版本号无变化，`latest/download/` 永久链接可用）
 - [ ] 拍 1–2 张截图并写 `screenshots.json`（可选）
-- [ ] 提收录 PR：把 `contrib/xinjiguaike__dsh-session-location.yml` 放到 awesome 仓库的 `data/plugins/` 下
+- [x] 收录条目已提交（fork `xinjiguaike/awesome-dsh-plugin` 分支 `add-xinjiguaike-dsh-session-location`）
 
 ## 八、下一步命令
 
