@@ -235,8 +235,9 @@ icon: https://raw.githubusercontent.com/xinjiguaike/dsh-session-location/main/as
 
 发布已完成的快照（2026-11-06）：
 
-- npm：`dsh-session-location@0.1.0`，`latest`；首次发布会先出现 `0.0.0-stage` 占位包（staged publishing 的占位），几分钟后真实版本落地，`latest` 指向 `0.1.0`
-- GitHub Release：`v0.1.0` + 版本无关的 `dsh-session-location.tgz` 附件
+- npm：`dsh-session-location@0.2.0`，`latest`（0.1.0 是首个版本）；首次发布会先出现 `0.0.0-stage` 占位包（staged publishing 的占位），几分钟后真实版本落地
+- GitHub Release：`v0.2.0` + 版本无关的 `dsh-session-location.tgz` 附件（`releases/latest/download/` 指向最新版本）
+- 发布 0.2.0 使用 Classic **Automation** token（`NPM_AGENT_API_TOKEN`）绕过 2FA；Granular token 会报 `EOTP`
 - 收录 PR：`awesome-dsh-plugin#12597`（等仓库满 1 天 gate 自动转绿）
 
 
