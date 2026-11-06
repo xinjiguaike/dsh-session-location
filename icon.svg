@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Session location labels">
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="#2f6fed"/>
+  <rect x="7" y="9" width="18" height="3" rx="1.5" fill="#ffffff" opacity="0.9"/>
+  <path d="M8 17.5h4l1.4 1.8H24v5.2H8z" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" opacity="0.75"/>
+</svg>

@@ -1,0 +1,54 @@
+{
+  "name": "dsh-session-location",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Shows the owning workspace and Git branch under each session row in the flat session list.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-workspace"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "node tests/render-harness.mjs"
+  },
+  "license": "MIT",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "dsh-client-plugin",
+    "session-list",
+    "git-branch"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0-0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xinjiguaike/dsh-session-location.git"
+  },
+  "homepage": "https://github.com/xinjiguaike/dsh-session-location#readme"
+}
