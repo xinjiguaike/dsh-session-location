@@ -36,7 +36,30 @@
 
 也就是说：宿主结构若变化，最坏结果是标签不显示、行高不变，而不是侧边栏错乱。反过来，若想在分组模式下也显示标签，把 `client.js` 的 `CSS` 里两处 `[class*="_flatList"] ` 前缀删掉即可（行内第二行会在所有模式出现）。
 
-## 安装与卸载
+## 安装（分享给别人用）
+
+要求 DSH `>= 0.2.2-rc.1 < 0.3.0-0`（`package.json` 的 `engines.dsh`；不满足时宿主会拒绝安装）。
+
+**桌面端（DSH Desktop）**：插件页 → **添加插件** → 包里输入 `dsh-session-location`（或 GitHub Release 的 tarball 地址、仓库地址），安装后按提示重启/刷新。
+
+**`dsh web` / 任意 profile**：
+
+```sh
+# 1) 从 npm 安装（推荐；国内镜像也会同步）
+dsh plugin --profile <profile> add dsh-session-location
+
+# 2) 或预构建 tarball（不执行任何构建脚本）
+dsh plugin --profile <profile> add https://github.com/xinjiguaike/dsh-session-location/releases/latest/download/dsh-session-location.tgz
+
+# 3) 或直接从 GitHub 源码安装
+dsh plugin --profile <profile> add github:xinjiguaike/dsh-session-location
+```
+
+`<profile>` 换成实际 profile 名（`dsh web` 默认 `web`）。装完刷新页面；桌面端如未生效重启一次应用。
+
+> 还没进 `awesome-dsh-plugin` 精选列表，所以 `dsh-market` 市场里暂时搜不到，上面三种方式都能直接用。
+
+## 本地开发安装（本机 link）
 
 已作为 profile bundle 安装到 `desktop` profile。组成：
 
