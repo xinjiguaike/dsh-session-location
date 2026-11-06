@@ -47,8 +47,7 @@ git push -u origin main
 
 清单里已经有：`dsh.bundle`（收录硬性要求）、`dsh.client`（浏览器半区）、`engines.dsh: ">=0.2.2-rc.1 <0.3.0-0"`（市场兼容性筛选读它）、`license: MIT`、`files` 白名单、`publishConfig.access: public`。
 
-> 改名后本地已安装的 `@local/dsh-session-location` 会与新名字对不上，需要重装一次才能继续开发预览：
-> 先在插件管理器里移除 `@local/dsh-session-location`，再把本目录装回来（或 `dsh plugin --profile desktop add link:/Users/rudyx/Projects/other/dsh-session-ui-enhance`）。
+> 改名会同时影响本地开发预览：`@local/dsh-session-location` 已从 profile 移除，本目录已用新名字 `dsh-session-location` 重新 link 安装（`link:/Users/rudyx/Projects/other/dsh-session-ui-enhance`），bundle patch 也已指向新名字。浏览器半区的模块 id 随包名改了，**页面必须刷新一次**（HMR 在改名时会出现 `duplicate factory registration`，是旧模块表未失效导致的，刷新即恢复）。
 
 ### 3. 市场展示物料（可选但值得）
 
