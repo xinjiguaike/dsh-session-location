@@ -13,6 +13,53 @@
 | 宿主「发现」索引源 | dsh 0.2.1+ 可添加自定义 format-1 索引，不上榜也能被搜索到 | 插件 → 发现 → 索引源 | 可选（自助通道） |
 | 宿主官方内置目录 | 随 DSH 发行版附带的官方 bundle | 无公开投稿入口 | — |
 
+## 零、账号与凭证准备（一次性）
+
+### GitHub SSH key
+
+本机默认公钥：`~/.ssh/id_ed25519.pub`（ED25519，注释 `xinjiguaike@163.com`，指纹 `SHA256:SwqV66PcAbqfCPk8q1WEGbK/dEzQsVMZ731xRvC7uVU`）。它**尚未加到 GitHub 账号**上，所以 `ssh -T git@github.com` 会返回 `Permission denied (publickey)`。
+
+1. 复制公钥：`pbcopy < ~/.ssh/id_ed25519.pub`
+2. GitHub → 头像 → **Settings → SSH and GPG keys → New SSH key**：Title 随意（如 `MacBook Pro`），Key type 选 **Authentication Key**，粘贴，Add SSH key。
+3. 验证：`ssh -T git@github.com`，应看到 `Hi xinjiguaike! You've successfully authenticated...`。
+4. 可选（有 passphrase 时免重复输入）：`ssh-add --apple-use-keychain ~/.ssh/id_ed25519`，并在 `~/.ssh/config` 写：
+
+   ```
+   Host github.com
+     AddKeysToAgent yes
+     UseKeychain yes
+     IdentityFile ~/.ssh/id_ed25519
+   ```
+
+若 GitHub 提示 *Key is already in use*，说明这把钥匙已绑在另一个账号上：去那边删掉，或给 GitHub 单独生成一把：
+
+```sh
+ssh-keygen -t ed25519 -C "xinjiguaike@github" -f ~/.ssh/id_ed25519_github
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519_github
+# ~/.ssh/config 的 IdentityFile 指到新钥匙，再把新 .pub 加到 GitHub
+```
+
+不想用 SSH 也可以走 HTTPS + Personal Access Token（fine-grained、只给目标仓库 Contents 读写），或 GitHub Desktop 登录。
+
+### npm 账号（发布 npm 包才需要）
+
+发布 npm 包**必须**有 npm 账号（免费，无付费计划要求）：
+
+1. 注册：<https://www.npmjs.com/signup>（用户名会成为你的 scoped 前缀 `@<用户名>/…`，发布前想好）。
+2. **验证邮箱**：未验证邮箱时 npm 拒绝发布。
+3. 建议开启 2FA：npmjs.com → Settings → **Two-factor authentication** → `auth-and-writes`（保存恢复码）。开启后命令行发布会要求 OTP。
+4. 命令行登录（本机默认 registry 是 npmmirror 只读镜像，必须显式指定官方）：
+
+   ```sh
+   export PATH="$HOME/.nvm/versions/node/v24.20.0/bin:$PATH"
+   npm login --registry=https://registry.npmjs.org/
+   npm whoami --registry=https://registry.npmjs.org/
+   ```
+
+   登录令牌写入 `~/.npmrc` 的 `//registry.npmjs.org/:_authToken=…`，是密钥，别外传。
+
+不打算发 npm 也能上架：awesome 列表支持只用 GitHub 条目（可加 Release tarball），只是没有下载量数字、安装时要走源码构建。
+
 ## 一、发布前的一次性准备
 
 ### 1. GitHub 仓库
