@@ -37,14 +37,14 @@ window.__ModuleLoader__.load({
       '[class*="_flatList"] [data-row-key^="session:"]:has(.' + CONTEXT_CLASS + '){height:44px;align-items:flex-start;padding-top:4px;padding-bottom:4px}',
       '.' + CONTEXT_CLASS + '{display:none;position:absolute;' +
         'left:calc(var(--dsh-sidebar-row-padding,12px) - var(--dsh-sidebar-paint-inset,0px) + 16px + var(--dsh-sidebar-label-gap,6px));' +
-        'right:8px;bottom:3px;align-items:center;gap:4px;min-width:0;' +
+        'right:8px;bottom:3px;align-items:center;gap:5px;min-width:0;' +
         'font-size:11px;line-height:14px;color:var(--dsw-alias-label-secondary);' +
         'pointer-events:none;white-space:nowrap;overflow:hidden}',
       '[class*="_flatList"] .' + CONTEXT_CLASS + '{display:flex}',
       '.dsh-sl-workspace{flex:0 1 auto;max-width:58%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.dsh-sl-branch{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}',
       '.dsh-sl-sep{flex:none;opacity:.45}',
-      '.dsh-sl-icon{flex:none;width:10px;height:10px;display:inline-flex;align-items:center;justify-content:center;opacity:.75}',
+      '.dsh-sl-icon{flex:none;width:12px;height:12px;display:inline-flex;align-items:center;justify-content:center;opacity:.8}',
     ].join('\n');
 
     function basename(path) {
@@ -196,6 +196,11 @@ window.__ModuleLoader__.load({
       return { workspaceName, branch };
     }
 
+    /**
+     * Closed-folder glyph copied from the Host's product icon set
+     * (`dsh-client-ui-primitives` artwork for `folder-close`, regular weight),
+     * so the label matches the folder rows and Workspace headings around it.
+     */
     function folderIcon(key) {
       return h(
         'svg',
@@ -203,19 +208,21 @@ window.__ModuleLoader__.load({
           key,
           className: 'dsh-sl-icon',
           viewBox: '0 0 16 16',
-          width: 10,
-          height: 10,
+          width: 12,
+          height: 12,
           fill: 'none',
-          stroke: 'currentColor',
-          strokeWidth: 1.3,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round',
+          strokeWidth: 1.2,
           'aria-hidden': 'true',
         },
-        h('path', { d: 'M2 4.6h3.3l1.2 1.6H14v5.5H2z' }),
+        h('path', {
+          d: 'M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z',
+          stroke: 'currentColor',
+        }),
+        h('path', { d: 'M3.63501 7.66614H12.3647', stroke: 'currentColor' }),
       );
     }
 
+    /** Branch glyph from the same Host icon set (`branch-outline`, regular weight). */
     function branchIcon(key) {
       return h(
         'svg',
@@ -223,19 +230,22 @@ window.__ModuleLoader__.load({
           key,
           className: 'dsh-sl-icon',
           viewBox: '0 0 16 16',
-          width: 10,
-          height: 10,
+          width: 12,
+          height: 12,
           fill: 'none',
-          stroke: 'currentColor',
-          strokeWidth: 1.3,
-          strokeLinecap: 'round',
+          strokeWidth: 1.2,
           'aria-hidden': 'true',
         },
-        h('circle', { cx: 4.5, cy: 3.6, r: 1.6 }),
-        h('circle', { cx: 4.5, cy: 12.4, r: 1.6 }),
-        h('circle', { cx: 11.5, cy: 5.6, r: 1.6 }),
-        h('path', { d: 'M4.5 5.2v5.6' }),
-        h('path', { d: 'M11.5 7.2v.8c0 1.4-1.1 2.4-2.5 2.4H6.2' }),
+        h('path', {
+          d: 'M1.01503 8.0001L5.6964 8.0001C6.41913 8.0001 6.78049 8.0001 7.12115 7.91951C7.4232 7.84804 7.71233 7.73014 7.97821 7.57C8.27809 7.38939 8.5364 7.13669 9.05303 6.63129L11.3281 4.40564',
+          stroke: 'currentColor',
+        }),
+        h('path', {
+          d: 'M1.01221 7.9999L5.6964 7.9999C6.41913 7.9999 6.78049 7.9999 7.12115 8.08049C7.4232 8.15196 7.71233 8.26986 7.97821 8.43C8.27809 8.61061 8.5364 8.86331 9.05303 9.36871L11.3281 11.5944',
+          stroke: 'currentColor',
+        }),
+        h('circle', { cx: 12.4502, cy: 3.3079, r: 1.56962, stroke: 'currentColor' }),
+        h('circle', { cx: 12.4502, cy: 12.6921, r: 1.56962, stroke: 'currentColor' }),
       );
     }
 
