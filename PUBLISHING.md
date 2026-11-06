@@ -245,32 +245,27 @@ icon: https://raw.githubusercontent.com/xinjiguaike/dsh-session-location/main/as
 - [x] `package.json` 改名 `dsh-session-location`、删 `private`、加 `repository` / `homepage`（`xinjiguaike/dsh-session-location`）
 - [x] 180×180 位图图标 `assets/icon-180.png`（由 `icon.svg` 生成）
 - [x] 收录条目已写好在 `contrib/xinjiguaike__dsh-session-location.yml`
-- [x] 本地 git 仓库已初始化并提交（`main`，等远端建好后 push）
+- [x] 本地 git 仓库已初始化并提交
+- [x] GitHub 公开仓库已创建并推送：<https://github.com/xinjiguaike/dsh-session-location>（4 个提交，topic 已设为 `dsh-plugin` / `deepseek-harness` / `dsh` / `dsh-client-plugin` 等）
 
 还需要你做（都要你的账号）：
 
-- [ ] 建 GitHub 公开仓库 `xinjiguaike/dsh-session-location`、加 `dsh-plugin` topic、等满 1 天
-- [ ] `git push` 到该仓库
-- [ ] npm 登录并发布到 `registry.npmjs.org`
+- [ ] 等仓库满 1 天（创建时间 2026-11-06 15:36 +08:00，即 2026-11-07 15:36 之后）再提收录 PR
+- [ ] npm 注册账号、登录并发布到 `registry.npmjs.org`
 - [ ] 拍 1–2 张截图并写 `screenshots.json`（可选）
 - [ ] 提收录 PR：把 `contrib/xinjiguaike__dsh-session-location.yml` 放到 awesome 仓库的 `data/plugins/` 下
 
-## 八、下一步命令（本机已无法代劳的部分）
+## 八、下一步命令
 
-本机默认 SSH key 未授权给 GitHub（实测 `git@github.com: Permission denied (publickey)`），也没有 `gh` CLI，因此建仓、push、npm 发布、开 PR 需要你在自己的终端完成：
+仓库与推送已完成（SSH key 已加授权，remote 为 `git@github.com:xinjiguaike/dsh-session-location.git`）。剩下：
 
 ```sh
-# 1) 先在网页建公开仓库 github.com/xinjiguaike/dsh-session-location（不要勾 README / gitignore / license）
-cd /Users/rudyx/Projects/other/dsh-session-ui-enhance
-git remote add origin git@github.com:xinjiguaike/dsh-session-location.git   # 或 https 地址
-git push -u origin main
-
-# 2) 发 npm（默认 registry 是 npmmirror 镜像，必须显式指定官方 registry）
+# 1) 发 npm（默认 registry 是 npmmirror 镜像，必须显式指定官方 registry）
 export PATH="$HOME/.nvm/versions/node/v24.20.0/bin:$PATH"
 npm login --registry=https://registry.npmjs.org/
 npm publish --registry=https://registry.npmjs.org/
 
-# 3) 提收录 PR：先 fork github.com/awesome-dsh-plugin/awesome-dsh-plugin 再提交
+# 2) 提收录 PR（仓库满 1 天后）：先 fork github.com/awesome-dsh-plugin/awesome-dsh-plugin 再提交
 cd /path/to/awesome-dsh-plugin
 git checkout -b add-xinjiguaike-dsh-session-location
 cp /Users/rudyx/Projects/other/dsh-session-ui-enhance/contrib/xinjiguaike__dsh-session-location.yml \
